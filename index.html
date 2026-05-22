@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Methods in Accounting & Finance Quiz</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --background: #f3f4f6;
+            --surface: #ffffff;
+            --text: #1f2937;
+            --text-muted: #4b5563;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .quiz-container {
+            background: var(--surface);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            max-width: 650px;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--background);
+            padding-bottom: 10px;
+        }
+
+        .progress-container {
+            background-color: var(--background);
+            border-radius: 20px;
+            height: 8px;
+            width: 100%;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background-color: var(--primary-light);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .hint-button {
+            background: none;
+            border: none;
+            color: var(--primary-light);
+            cursor: pointer;
+            font-weight: 500;
+            padding: 0;
+            margin-bottom: 15px;
+            display: block;
+            font-size: 0.9rem;
+        }
+
+        .hint-text {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--primary-light);
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            display: none;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .option-btn {
+            background-color: var(--surface);
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text);
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background-color: #f9fafb;
+            border-color: var(--primary-light);
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .option-btn.correct {
+            background-color: #ecfdf5;
+            border-color: var(--success);
+            color: #065f46;
+            font-weight: 600;
+        }
+
+        .option-btn.incorrect {
+            background-color: #fef2f2;
+            border-color: var(--danger);
+            color: #991b1b;
+        }
+
+        .rationale-box {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            display: none;
+        }
+
+        .action-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            float: right;
+            transition: background-color 0.2s;
+        }
+
+        .action-btn:hover {
+            background-color: #1d4ed8;
+        }
+
+        .action-btn:disabled {
+            background-color: #d1d5db;
+            cursor: not-allowed;
+        }
+
+        .results-container {
+            text-align: center;
+            display: none;
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div id="quiz-screen">
+        <h1 id="quiz-title">Research Methods Quiz</h1>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="question-text" id="question-text">Loading question...</div>
+        
+        <button class="hint-button" id="hint-btn" onclick="toggleHint()">💡 Show Hint</button>
+        <div class="hint-text" id="hint-text"></div>
+
+        <div class="options-list" id="options-list"></div>
+        <div class="rationale-box" id="rationale-box"></div>
+        
+        <button class="action-btn" id="next-btn" onclick="nextQuestion()" disabled>Next Question</button>
+        <div style="clear: both;"></div>
+    </div>
+
+    <div id="results-screen" class="results-container">
+        <h1>Quiz Completed!</h1>
+        <p>Your final score is:</p>
+        <div class="score-display" id="score-display">0 / 0</div>
+        <p id="feedback-text"></p>
+        <button class="action-btn" style="float: none; margin-top: 20px;" onclick="restartQuiz()">Restart Quiz</button>
+    </div>
+</div>
+
+<script>
+    const quizData = {
+        "questions": [
+            {
+                "question": "Which of the following statements accurately describes the relationship between 'Inductive' research and hypotheses?",
+                "answerOptions": [
+                    { "text": "Inductive research begins with a strict hypothesis and seeks to prove it using statistical data.", "rationale": "Beginning with a theory and a strict hypothesis to test is the definition of deductive research, not inductive.", "isCorrect": false },
+                    { "text": "Inductive research typically observes patterns in data first and uses those observations to generate hypotheses or theories.", "rationale": "Inductive reasoning is a 'bottom-up' approach where hypotheses and theoretical frameworks are the outcomes of the research, not the starting points.", "isCorrect": true },
+                    { "text": "Inductive research completely bans the formulation of hypotheses at any stage.", "rationale": "While it doesn't start with them, inductive research frequently concludes by proposing hypotheses for future deductive testing.", "isCorrect": false },
+                    { "text": "Inductive research relies on hypotheses to eliminate the need for data collection.", "rationale": "Data collection is vital to induction, as the entire theory is built directly from those empirical observations.", "isCorrect": false }
+                ],
+                "hint": "Remember the logical direction: are hypotheses the 'input' or the 'output' of a bottom-up approach?"
+            },
+            {
+                "question": "When an accounting researcher conducts an empirical study within an actual, operating corporate office rather than a laboratory, this environment is known as:",
+                "answerOptions": [
+                    { "text": "Archival research", "rationale": "Archival research relies on historical documents and databases, not active data collection in a live setting.", "isCorrect": false },
+                    { "text": "Experimental laboratory research", "rationale": "Laboratory research takes place in an artificial, highly controlled setting removed from everyday life.", "isCorrect": false },
+                    { "text": "Field research", "rationale": "Field research takes place in a natural, real-life environment where the phenomena naturally occur.", "isCorrect": true },
+                    { "text": "Desk research", "rationale": "Desk research involves analyzing secondary data from the comfort of an office, without visiting the source environment.", "isCorrect": false }
+                ],
+                "hint": "Think of the term used when scientists leave the lab to study subjects in their natural habitat."
+            },
+            {
+                "question": "In qualitative interviewing, why is it structurally inaccurate to say that a researcher should 'avoid follow-up' questions?",
+                "answerOptions": [
+                    { "text": "Because avoiding follow-ups is only required in quantitative surveys, not qualitative research.", "rationale": "While quantitative surveys are standardized, qualitative interviews actively thrive on follow-ups to explore deep meanings.", "isCorrect": false },
+                    { "text": "Because follow-up questions are essential in qualitative research to probe deeper into unexpected insights and ensure data saturation.", "rationale": "Qualitative interviews are flexible; avoiding follow-up questions would prevent the researcher from uncovering the nuance and 'why' behind human behavior.", "isCorrect": true },
+                    { "text": "Because follow-up questions are the only way to calculate a p-value.", "rationale": "Qualitative research deals with non-numerical data and does not calculate statistical p-values.", "isCorrect": false },
+                    { "text": "Because avoiding follow-ups makes the interview too long to analyze.", "rationale": "Avoiding follow-ups would make an interview shorter, but significantly less meaningful and robust.", "isCorrect": false }
+                ],
+                "hint": "Consider the primary goal of qualitative research: is it to strictly standardize responses or to deeply understand a perspective?"
+            },
+            {
+                "question": "When presenting final research results, what is the most critical factor a presenter must focus on to ensure their communication is effective?",
+                "answerOptions": [
+                    { "text": "Presenting every single row of raw data collected to prove transparency.", "rationale": "Dumping raw data overwhelms the audience; details belong in the appendix, not the core presentation.", "isCorrect": false },
+                    { "text": "Tailoring the presentation and results according to the specific background and needs of the audience.", "rationale": "Effective communication requires adjusting the technical depth, terminology, and key takeaways based on whether the audience is academic, managerial, or general.", "isCorrect": true },
+                    { "text": "Using the most complex statistical jargon possible to sound authoritative.", "rationale": "Overuse of unneeded jargon obscures the actual findings and alienates listeners who may not share that exact technical background.", "isCorrect": false },
+                    { "text": "Focusing exclusively on the history of the university where the research was conducted.", "rationale": "The focus must remain on the findings and their implications, not institutional background details.", "isCorrect": false }
+                ],
+                "hint": "Think about how you would explain your thesis differently to a panel of expert professors versus a group of corporate managers."
+            }
+        ]
+    };
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let hintShown = false;
+
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultsScreen = document.getElementById('results-screen');
+    const questionText = document.getElementById('question-text');
+    const optionsList = document.getElementById('options-list');
+    const progressBar = document.getElementById('progress-bar');
+    const nextBtn = document.getElementById('next-btn');
+    const hintText = document.getElementById('hint-text');
+    const hintBtn = document.getElementById('hint-btn');
+    const rationaleBox = document.getElementById('rationale-box');
+    const scoreDisplay = document.getElementById('score-display');
+    const feedbackText = document.getElementById('feedback-text');
+
+    function loadQuestion() {
+        hintText.style.display = 'none';
+        hintBtn.textContent = "💡 Show Hint";
+        hintShown = false;
+        rationaleBox.style.display = 'none';
+        nextBtn.disabled = true;
+        nextBtn.textContent = currentQuestionIndex === quizData.questions.length - 1 ? "Finish Quiz" : "Next Question";
+        optionsList.innerHTML = '';
+
+        const currentQuestion = quizData.questions[currentQuestionIndex];
+        questionText.textContent = `${currentQuestionIndex + 1}. ${currentQuestion.question}`;
+        hintText.textContent = currentQuestion.hint;
+
+        // Update progress bar
+        const progressPercentage = (currentQuestionIndex / quizData.questions.length) * 100;
+        progressBar.style.width = `${progressPercentage}%`;
+
+        currentQuestion.answerOptions.forEach((option, index) => {
+            const button = document.createElement('button');
+            button.className = 'option-btn';
+            button.textContent = option.text;
+            button.onclick = () => selectOption(index, button);
+            optionsList.appendChild(button);
+        });
+    }
+
+    function toggleHint() {
+        if (!hintShown) {
+            hintText.style.display = 'block';
+            hintBtn.textContent = "🙈 Hide Hint";
+            hintShown = true;
+        } else {
+            hintText.style.display = 'none';
+            hintBtn.textContent = "💡 Show Hint";
+            hintShown = false;
+        }
+    }
+
+    function selectOption(selectedIndex, selectedButton) {
+        const currentQuestion = quizData.questions[currentQuestionIndex];
+        const buttons = optionsList.getElementsByClassName('option-btn');
+        
+        // Disable all options immediately after selection
+        for (let btn of buttons) {
+            btn.disabled = true;
+        }
+
+        const selectedOption = currentQuestion.answerOptions[selectedIndex];
+        
+        if (selectedOption.isCorrect) {
+            selectedButton.classList.add('correct');
+            score++;
+        } else {
+            selectedButton.classList.add('incorrect');
+            // Highlight the correct answer alternative
+            currentQuestion.answerOptions.forEach((opt, idx) => {
+                if (opt.isCorrect) {
+                    buttons[idx].classList.add('correct');
+                }
+            });
+        }
+
+        // Show rationale
+        rationaleBox.textContent = selectedOption.rationale;
+        rationaleBox.style.display = 'block';
+        nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+        if (currentQuestionIndex < quizData.questions.length - 1) {
+            currentQuestionIndex++;
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        progressBar.style.width = '100%';
+        quizScreen.style.display = 'none';
+        resultsScreen.style.display = 'block';
+        scoreDisplay.textContent = `${score} / ${quizData.questions.length}`;
+        
+        if (score === quizData.questions.length) {
+            feedbackText.textContent = "Perfect score! Outstanding mastery of research methods!";
+        } else if (score >= quizData.questions.length * 0.7) {
+            feedbackText.textContent = "Great job! You have a solid grasp of these core concepts.";
+        } else {
+            feedbackText.textContent = "Good try! Consider reviewing the rationales and trying again.";
+        }
+    }
+
+    function restartQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        resultsScreen.style.display = 'none';
+        quizScreen.style.display = 'block';
+        loadQuestion();
+    }
+
+    // Initialize Quiz
+    loadQuestion();
+</script>
+
+</body>
+</html>
