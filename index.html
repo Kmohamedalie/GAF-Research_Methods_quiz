@@ -47,13 +47,6 @@
             padding-bottom: 10px;
         }
 
-        h2 {
-            font-size: 1.2rem;
-            color: var(--primary);
-            margin-top: 25px;
-            margin-bottom: 10px;
-        }
-
         .setup-screen, .results-container {
             text-align: center;
         }
@@ -79,6 +72,8 @@
             display: flex;
             gap: 10px;
             margin-bottom: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .preset-btn {
@@ -255,17 +250,18 @@
 <div class="quiz-container">
     <div id="setup-screen" class="setup-screen">
         <h1>Research Methods Study Hub</h1>
-        <p>Customize your practicing session. Questions will be drawn entirely at random from the 44-question mastery bank.</p>
+        <p>Customize your practicing session. Questions will be drawn entirely at random from the <span id="total-q-count" style="font-weight: bold; color: var(--primary);">0</span>-question mastery bank without duplication.</p>
         
         <div class="input-group">
             <label for="question-count" style="font-weight: 600;">How many questions would you like to practice?</label>
             <div class="preset-buttons">
                 <button class="preset-btn" onclick="setQuestionCountPreset(5)">5</button>
                 <button class="preset-btn" onclick="setQuestionCountPreset(10)">10</button>
-                <button class="preset-btn" onclick="setQuestionCountPreset(20)">20</button>
-                <button class="preset-btn" onclick="setQuestionCountPreset(44)">All (44)</button>
+                <button class="preset-btn" onclick="setQuestionCountPreset(25)">25</button>
+                <button class="preset-btn" onclick="setQuestionCountPreset(50)">50</button>
+                <button class="preset-btn" id="btn-all">All</button>
             </div>
-            <input type="number" id="question-count" min="1" max="44" value="10">
+            <input type="number" id="question-count" min="1" value="10">
         </div>
 
         <button class="action-btn" onclick="startQuiz()" style="width: 100%; max-width: 250px; padding: 15px;">Start Practice Session</button>
@@ -309,7 +305,7 @@
 </div>
 
 <script>
-    // Master Array containing all 44 distinct questions categorized by topic mapping tags
+    // Master Array: PASTE ALL YOUR 94 QUESTIONS INTO THIS ARRAY
     const masterQuestionBank = [
         {
             "topic": "Philosophy",
@@ -745,7 +741,7 @@
             "question": "In ethical research, what is 'Anonymity'?",
             "answerOptions": [
                 { "text": "The researcher knows the participant's identity but keeps it secret.", "rationale": "This describes confidentiality, not true anonymity.", "isCorrect": false },
-                { "text": "The researcher does not know and cannot identify the participant from the data.", "rationale": "True anonymity means there is no way to connect a response back to the person who gave it.", "isCorrect": true },
+                { "text": "The researcher does not know and cannot identify the participant from the data.", "rationale": "True anonymity means there is zero linkage trace between the data payload and the human identity.", "isCorrect": true },
                 { "text": "Publishing the participant's name without their permission.", "rationale": "This constitutes a severe ethical breach and confidentiality failure.", "isCorrect": false },
                 { "text": "Paying participants in cash so there is no paper trail.", "rationale": "Avoiding accounting trails does not protect the data trace itself from identity linkage.", "isCorrect": false }
             ],
@@ -1210,6 +1206,20 @@
     const scoreTrackerDisplay = document.getElementById('score-tracker-display');
     const recommendationsContainer = document.getElementById('recommendations-container');
     const recommendationsList = document.getElementById('recommendations-list');
+
+    // Dynamic Initialization based on array size
+    window.onload = function() {
+        const totalQ = masterQuestionBank.length;
+        document.getElementById('total-q-count').textContent = totalQ;
+        
+        const countInput = document.getElementById('question-count');
+        countInput.max = totalQ;
+        
+        // Dynamically update the 'All' button text to reflect exactly how many items you've pasted in
+        const btnAll = document.getElementById('btn-all');
+        btnAll.textContent = `All (${totalQ})`;
+        btnAll.onclick = () => setQuestionCountPreset(totalQ);
+    };
 
     function setQuestionCountPreset(count) {
         document.getElementById('question-count').value = count;
